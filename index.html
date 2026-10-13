@@ -254,32 +254,11 @@ header{
   min-width:220px;
 }
 
-.logo-mark{
-  width:47px;
-  height:47px;
-  border-radius:13px;
-  background:var(--navy);
-  display:grid;
-  place-items:center;
-  color:var(--gold);
-  font-weight:900;
-  font-size:1.2rem;
-  position:relative;
-  overflow:hidden;
-}
-
-.logo-mark::before{
-  content:"";
-  position:absolute;
-  width:30px;
-  height:30px;
-  border:2px solid var(--gold);
-  transform:rotate(45deg);
-}
-
-.logo-mark span{
-  position:relative;
-  z-index:2;
+.logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 10px;
 }
 
 .brand-name{
@@ -373,20 +352,14 @@ header{
   margin-bottom:28px;
 }
 
-.hero-logo-symbol{
-  width:58px;
-  height:58px;
-  border:2px solid var(--gold);
-  border-radius:16px;
-  display:grid;
-  place-items:center;
-  color:var(--gold);
-  font-size:1.5rem;
-  transform:rotate(45deg);
-}
-
-.hero-logo-symbol i{
-  transform:rotate(-45deg);
+.hero-logo-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .hero-logo-text{
@@ -1681,9 +1654,7 @@ footer a:hover{
 
     <a href="#home" class="brand">
 
-      <div class="logo-mark">
-        <span>MC</span>
-      </div>
+      <img src="logo.png" alt="Meshaq Connection Limited Logo" class="logo-img">
 
       <div>
         <div class="brand-name">MESHAQ CONNECTION LIMITED</div>
@@ -1743,9 +1714,7 @@ footer a:hover{
 
     <div class="hero-logo">
 
-      <div class="hero-logo-symbol">
-        <i class="fa-solid fa-compass-drafting"></i>
-      </div>
+      <img src="logo.png" alt="Meshaq Connection Limited Logo" class="hero-logo-img">
 
       <div class="hero-logo-text">
         MESHAQ CONNECTION LIMITED
@@ -4886,4 +4855,4 @@ updateSummary();
 </script>
 
 </body>
-   </html>
+</html>
