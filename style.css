@@ -27,3 +27,44 @@
 @keyframes callPulse{0%,100%{transform:rotate(0) scale(1)}5%{transform:rotate(-12deg) scale(1.05)}10%{transform:rotate(12deg) scale(1.05)}15%{transform:rotate(-8deg)}20%{transform:rotate(0)}}
 @media(max-width:560px){.about-showcase .about-image img{height:310px}.about-image-badge strong{font-size:14px}.about-points article{padding:12px}.btn-cyan{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.pulse-whatsapp,.pulse-call{animation:none!important}}
+
+
+/* Integrum-inspired clean white/cyan palette and card-based home catalogue */
+:root{--cyan:#13b8df;--cyan-dark:#0798c0;--gold:#13b8df;--gold2:#5dd7f1;--navy:#102b3c;--ink:#20313b;--line:#e4edf1;--muted:#667780;--shadow:0 16px 40px rgba(12,47,64,.10)}
+body{background:#fff;color:var(--ink)}
+.site-header{position:relative;top:auto;background:rgba(255,255,255,.97);box-shadow:0 5px 22px rgba(13,48,63,.07);border-bottom:1px solid #edf3f5}
+.nav-links .nav-quote{background:var(--cyan);color:#fff;border-radius:7px;padding:11px 16px}
+.nav-links .nav-quote:hover{background:var(--cyan-dark)}
+.eyebrow,.section-heading .eyebrow{color:var(--cyan-dark)}
+.btn-gold,.btn-navy{background:var(--cyan);color:#fff;border-color:var(--cyan);box-shadow:0 8px 20px rgba(19,184,223,.18)}
+.btn-gold:hover,.btn-navy:hover{background:var(--cyan-dark);border-color:var(--cyan-dark)}
+.btn-outline{border-color:rgba(255,255,255,.85)}
+.service-card,.home-card,.private-design-card{border:1px solid #e4edf1;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 10px 28px rgba(12,47,64,.065);transition:transform .28s,box-shadow .28s,border-color .28s}
+.service-card:hover,.home-card:hover,.private-design-card:hover{transform:translateY(-7px);box-shadow:0 18px 42px rgba(12,47,64,.13);border-color:#9de7f6}
+.photo-tag,.location-label,.price-label{background:#e8faff;color:#087f9e}
+.text-link{color:#078eb2}
+.text-link:hover{color:#075b72}
+.check-list li:before,.process-grid article>b{background:var(--cyan);color:white}
+.contact-panel{background:#f1fbfd;color:#183743;border:1px solid #d9f2f8}
+.contact-panel>p,.contact-row a,.contact-row span{color:#536b76}
+.contact-row{border-color:#d9eaf0}.contact-row small,.footer-grid h4{color:var(--cyan-dark)}
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(19,184,223,.14)}
+.cta-band{background:linear-gradient(100deg,rgba(9,39,54,.94),rgba(11,73,91,.88)),url('https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1800&q=80') center/cover}
+.private-homes-section{background:#f7fcfd}
+.design-filter-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:-8px 0 30px}
+.design-filter-row span{border:1px solid #d9edf2;background:#fff;color:#41616c;padding:9px 14px;border-radius:999px;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(12,47,64,.035)}
+.design-filter-row span:first-child{background:var(--cyan);border-color:var(--cyan);color:#fff}
+.private-design-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:stretch}
+.private-design-image{height:205px;position:relative;overflow:hidden;background:#e5f0f3}
+.private-design-image img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.private-design-card:hover .private-design-image img{transform:scale(1.055)}
+.design-chip{position:absolute;top:13px;left:13px;padding:7px 10px;border-radius:5px;background:rgba(255,255,255,.94);color:#087e9b;font-size:9px;letter-spacing:.7px;font-weight:950}
+.private-design-copy{padding:19px 19px 21px}
+.private-design-copy small{display:block;color:#078eae;font-size:9px;font-weight:900;letter-spacing:.8px;margin-bottom:9px}
+.private-design-copy h3{color:#183746;font-size:17px;line-height:1.35;margin:0 0 9px}
+.private-design-copy p{color:#687a83;font-size:12px;line-height:1.7;min-height:62px;margin:0 0 14px}
+.fine-print.centered{max-width:880px;margin:25px auto 0;color:#71828a}
+.topbar{display:none!important}
+@media(max-width:1080px){.private-design-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:850px){.private-design-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.site-header{position:relative}.nav-links{background:#fff}}
+@media(max-width:560px){.private-design-grid{grid-template-columns:1fr}.private-design-image{height:230px}.private-design-copy p{min-height:0}.design-filter-row{gap:7px}.design-filter-row span{font-size:10px;padding:8px 11px}}
