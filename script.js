@@ -1,4 +1,4 @@
-let projectData = [
+const projectData = [
   {title:"Contemporary Family Home",category:"homes",tag:"RESIDENTIAL",location:"Modern home design",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=85"},
   {title:"Luxury Modern Residence",category:"luxury",tag:"LUXURY HOME",location:"Clean lines and natural light",image:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85"},
   {title:"Modern Bungalow Concept",category:"homes",tag:"BUNGALOW",location:"Practical single-level living",image:"https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=85"},
@@ -37,35 +37,6 @@ function renderProjects(filter="all") {
   if (window.lucide) lucide.createIcons();
 }
 renderProjects();
-async function loadPublishedProjects() {
-  try {
-    const response = await fetch("/api/projects", {credentials:"same-origin"});
-    if (!response.ok) return;
-    const projects = await response.json();
-    if (!projects.length) return; // Keep the clearly labelled design-inspiration gallery until verified work is published.
-    projectData = projects.map(p => ({title:p.title,category:p.category||"homes",tag:String(p.category||"PROJECT").toUpperCase(),location:p.location||"Kenya",image:p.image_url||"",description:p.description||""}));
-    renderProjects(document.querySelector(".filter-btn.active")?.dataset.filter || "all");
-  } catch {}
-}
-loadPublishedProjects();
-async function loadServices() {
-  try {
-    const response = await fetch("/api/services", {credentials:"same-origin"}); if(!response.ok)return;
-    const services=await response.json(); if(!services.length)return;
-    const grid=document.getElementById("servicesGrid"); if(!grid)return;
-    grid.innerHTML=services.map((service,index)=>`<article class="service-card ${index===0?'service-featured':''}"><div class="service-number">${String(index+1).padStart(2,'0')}${index===0?' / CORE SERVICE':''}</div><div class="service-icon"><i data-lucide="${safeText(service.icon||'hammer')}"></i></div><h3>${safeText(service.title)}</h3><p>${safeText(service.description)}</p><a href="#project-request" class="service-link" data-service="${safeText(service.title)}">Discuss this service <i data-lucide="arrow-up-right"></i></a></article>`).join("");
-    if(window.lucide)lucide.createIcons();
-  } catch {}
-}
-loadServices();
-document.getElementById("servicesGrid")?.addEventListener("click",event=>{const link=event.target.closest(".service-link");if(!link)return;const type=document.getElementById("projectType");if(type){const title=link.dataset.service.toLowerCase();if(title.includes('renovat'))type.value='Renovation / remodeling';else if(title.includes('commercial'))type.value='Commercial building';else if(title.includes('interior')||title.includes('finish'))type.value='Interior finishing';else if(title.includes('house'))type.value='Full house project';else type.value='Other project';}});
-async function loadTestimonials(){
-  const target=document.getElementById('testimonialsGrid');if(!target)return;
-  try{const response=await fetch('/api/testimonials',{credentials:'same-origin'});if(!response.ok)return;const items=await response.json();if(!items.length){target.innerHTML='';return;}
-    target.innerHTML=items.map(t=>`<article class="testimonial-card"><div class="testimonial-stars" aria-label="${Number(t.rating)||5} out of 5 stars">${'★'.repeat(Math.max(1,Math.min(5,Number(t.rating)||5)))}</div><blockquote>“${safeText(t.quote)}”</blockquote><strong>${safeText(t.name)}</strong><small>${safeText(t.role||'Client')}</small></article>`).join('');
-  }catch{}
-}
-loadTestimonials();
 document.querySelectorAll(".filter-btn").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
   button.classList.add("active");
@@ -108,7 +79,7 @@ document.querySelectorAll(".service-link").forEach(link => link.addEventListener
 }));
 
 const form = document.getElementById("projectForm");
-form?.addEventListener("submit", async event => {
+form?.addEventListener("submit", event => {
   event.preventDefault();
   const checkedServices = [...form.querySelectorAll('input[name="services"]:checked')].map(el => el.value);
   const feedback = document.getElementById("formFeedback");
@@ -117,73 +88,84 @@ form?.addEventListener("submit", async event => {
     form.querySelector(".services-field").scrollIntoView({behavior:"smooth",block:"center"});
     return;
   }
-  if (!form.querySelector('[name="consent"]')?.checked) { feedback.textContent = "Please confirm the privacy consent before submitting."; return; }
   const data = new FormData(form);
-  const payload = {
-    name: String(data.get("name") || "").trim(), phone: String(data.get("phone") || "").trim(),
-    email: String(data.get("email") || "").trim(), contactMethod: data.get("contactMethod"),
-    county: data.get("county"), location: String(data.get("location") || "").trim(),
-    projectType: data.get("projectType"), services: checkedServices, budget: data.get("budget"),
-    startDate: data.get("startDate"), plotStatus: data.get("plotStatus"), size: String(data.get("size") || "").trim(),
-    details: String(data.get("details") || "").trim(), website: String(data.get("website") || ""), consent: true
-  };
-  const submit = form.querySelector('button[type="submit"]');
-  submit.disabled = true; feedback.textContent = "Submitting your enquiry securely…";
-  try {
-    const response = await fetch("/api/enquiries", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),credentials:"same-origin"});
-    const result = await response.json().catch(()=>({}));
-    if (!response.ok) throw new Error(result.error || "We couldn't submit your enquiry. Please check your details and try again.");
-    const message = [
-      "PROJECT APPLICATION — MESHAQ CONNECTION LIMITED", "", `Reference: ${result.id || "Submitted online"}`,
-      `Full name: ${payload.name}`, `Phone: ${payload.phone}`, `Email: ${payload.email || "Not provided"}`,
-      `Preferred contact: ${payload.contactMethod}`, `County: ${payload.county}`, `Project location: ${payload.location}`,
-      `Project type: ${payload.projectType}`, `Services required: ${checkedServices.join(", ")}`,
-      `Estimated budget: ${payload.budget}`, `Preferred start: ${payload.startDate || "Not specified"}`,
-      `Plot status: ${payload.plotStatus || "Not specified"}`, `Bedrooms / floors: ${payload.size || "Not specified"}`,
-      `Project details: ${payload.details}`, "", "I have submitted this enquiry through your website. Please contact me about the next steps."
-    ].join("\n");
-    feedback.textContent = `${result.message || "Your enquiry has been received."} You can also send the details to our WhatsApp team.`;
-    const wa = document.createElement("a"); wa.href = "https://wa.me/254712242050?text=" + encodeURIComponent(message); wa.target="_blank"; wa.rel="noopener noreferrer"; wa.className="btn btn-gold"; wa.textContent="Continue on WhatsApp"; wa.style.marginTop="10px"; feedback.appendChild(document.createElement("br")); feedback.appendChild(wa);
-    form.reset();
-  } catch (error) { feedback.textContent = error.message || "Network error. Please try again or contact us by WhatsApp."; }
-  finally { submit.disabled = false; }
+  const attachment = document.getElementById("attachment")?.files?.[0];
+  const message = [
+    "PROJECT APPLICATION — MESHAQ CONNECTION LIMITED",
+    "",
+    `Full name: ${data.get("name")}`,
+    `Phone: ${data.get("phone")}`,
+    `Email: ${data.get("email") || "Not provided"}`,
+    `Preferred contact: ${data.get("contactMethod")}`,
+    `County: ${data.get("county")}`,
+    `Project location: ${data.get("location")}`,
+    `Project type: ${data.get("projectType")}`,
+    `Services required: ${checkedServices.join(", ")}`,
+    `Estimated budget: ${data.get("budget")}`,
+    `Preferred start: ${data.get("startDate")}`,
+    `Plot status: ${data.get("plotStatus")}`,
+    `Bedrooms / floors: ${data.get("size") || "Not specified"}`,
+    `Project details: ${data.get("details")}`,
+    `Reference file selected: ${attachment ? attachment.name + " (please attach it manually in WhatsApp)" : "No file selected"}`,
+    "",
+    "Please contact me to discuss the next steps. Thank you."
+  ].join("\n");
+  feedback.textContent = "Your application message is ready. WhatsApp will open in a new tab so you can review and send it.";
+  const whatsappUrl = "https://wa.me/25471224050?text=" + encodeURIComponent(message);
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 });
 
 const commentInput = document.getElementById("commentInput");
-const commentName = document.getElementById("commentName");
 const commentsList = document.getElementById("commentsList");
 const commentCount = document.getElementById("commentCount");
 const postComment = document.getElementById("postComment");
-function safeText(value) { const span = document.createElement("span"); span.textContent = value ?? ""; return span.innerHTML; }
-async function renderComments() {
-  if (!commentsList) return;
-  try {
-    const response = await fetch("/api/comments", {credentials:"same-origin"});
-    const comments = response.ok ? await response.json() : [];
-    commentCount.textContent = `${comments.length} published comment${comments.length === 1 ? "" : "s"}`;
-    if (!comments.length) { commentsList.innerHTML = '<div class="empty-comments">No approved comments yet. Be the first to share feedback.</div>'; return; }
-    commentsList.innerHTML = comments.map(comment => `<article class="comment" data-id="${Number(comment.id)}"><div class="comment-head"><b>${safeText(comment.name)}</b><small>${new Date(comment.created_at).toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"})}</small></div><p>${safeText(comment.text)}</p><div class="comment-actions"><button class="like-comment" data-id="${Number(comment.id)}"><i data-lucide="thumbs-up"></i> Like <span>${Number(comment.likes)||0}</span></button></div></article>`).join("");
-    if (window.lucide) lucide.createIcons();
-  } catch { commentCount.textContent = "Community feedback"; commentsList.innerHTML = '<div class="empty-comments">Comments are temporarily unavailable.</div>'; }
+const storageKey = "meshaq_local_comments_v1";
+function getComments() {
+  try { return JSON.parse(localStorage.getItem(storageKey) || "[]"); } catch { return []; }
 }
-postComment?.addEventListener("click", async () => {
-  const name = commentName?.value.trim() || ""; const text = commentInput?.value.trim() || "";
-  if (name.length < 2) { commentName?.focus(); return; }
-  if (text.length < 2) { commentInput?.focus(); return; }
-  postComment.disabled = true;
-  try {
-    const response = await fetch("/api/comments", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,text,website:""}),credentials:"same-origin"});
-    const result = await response.json().catch(()=>({})); if (!response.ok) throw new Error(result.error || "Unable to send comment.");
-    commentName.value=""; commentInput.value=""; alert(result.message || "Thank you. Your comment is awaiting review.");
-  } catch (error) { alert(error.message || "Unable to send comment. Please try again."); }
-  finally { postComment.disabled = false; }
+function saveComments(comments) {
+  try { localStorage.setItem(storageKey, JSON.stringify(comments)); } catch {}
+}
+function safeText(value) {
+  const span = document.createElement("span");
+  span.textContent = value;
+  return span.innerHTML;
+}
+function renderComments() {
+  const comments = getComments();
+  commentCount.textContent = `${comments.length} comment${comments.length === 1 ? "" : "s"}`;
+  if (!comments.length) {
+    commentsList.innerHTML = '<div class="empty-comments">No comments yet. Be the first to leave a question or feedback.</div>';
+    return;
+  }
+  commentsList.innerHTML = comments.slice().reverse().map(comment => `
+    <article class="comment" data-id="${comment.id}">
+      <div class="comment-head"><b>${safeText(comment.name || "Website visitor")}</b><small>${safeText(comment.date || "Just now")}</small></div>
+      <p>${safeText(comment.text)}</p>
+      <div class="comment-actions"><button class="like-comment ${comment.liked ? "liked" : ""}" data-id="${comment.id}"><i data-lucide="thumbs-up"></i> Like <span>${comment.likes || 0}</span></button></div>
+    </article>`).join("");
+  if (window.lucide) lucide.createIcons();
+}
+postComment?.addEventListener("click", () => {
+  const text = commentInput.value.trim();
+  if (!text) { commentInput.focus(); return; }
+  const comments = getComments();
+  comments.push({id:Date.now().toString(), name:"Website visitor", text, date:new Date().toLocaleDateString("en-KE",{day:"numeric",month:"short",year:"numeric"}), likes:0, liked:false});
+  saveComments(comments);
+  commentInput.value = "";
+  renderComments();
 });
 commentInput?.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); postComment.click(); }});
-commentsList?.addEventListener("click", async e => {
-  const button = e.target.closest(".like-comment"); if (!button) return;
-  button.disabled=true;
-  try { const response=await fetch(`/api/comments/${button.dataset.id}/like`,{method:"POST",credentials:"same-origin"});const result=await response.json();if(!response.ok)throw new Error(result.error);const count=button.querySelector('span');if(count)count.textContent=result.likes; }
-  catch(error){ console.warn(error); } finally { button.disabled=false; }
+commentsList?.addEventListener("click", e => {
+  const button = e.target.closest(".like-comment");
+  if (!button) return;
+  const comments = getComments();
+  const comment = comments.find(c => c.id === button.dataset.id);
+  if (!comment) return;
+  comment.liked = !comment.liked;
+  comment.likes = Math.max(0, (comment.likes || 0) + (comment.liked ? 1 : -1));
+  saveComments(comments);
+  renderComments();
 });
 renderComments();
 
